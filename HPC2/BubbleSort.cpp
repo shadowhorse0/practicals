@@ -1,9 +1,6 @@
 #include <omp.h>
 #include <bits/stdc++.h>
 
-using std::chrono::duration_cast;
-using std::chrono::high_resolution_clock;
-using std::chrono::milliseconds;
 using namespace std;
 
 void s_bubble(int* a, int n)
@@ -66,6 +63,7 @@ int main(int argc, const char** argv)
 
 
     double start2 = omp_get_wtime(); // Start timer
+    omp_set_num_threads(2);
     p_bubble(a, n);
     double stop2 = omp_get_wtime(); // Stop timer
     double parallelTime= stop2 - start2;
