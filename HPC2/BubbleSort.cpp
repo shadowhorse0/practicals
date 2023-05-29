@@ -1,20 +1,10 @@
 #include <omp.h>
-#include <stdlib.h>
-#include <array>
-#include <chrono>
-#include <functional>
-#include <iostream>
-#include <string>
-#include <vector>
+#include <bits/stdc++.h>
 
 using std::chrono::duration_cast;
 using std::chrono::high_resolution_clock;
 using std::chrono::milliseconds;
 using namespace std;
-
-void s_bubble(int*, int);
-void p_bubble(int*, int);
-void swap(int&, int&);
 
 void s_bubble(int* a, int n)
 {
@@ -22,8 +12,6 @@ void s_bubble(int* a, int n)
     {
         int first = i % 2;
         for (int j = first; j < n - 1; j += 2)
-    // int* b = new int[n];
-    // copy(a, a + n, b);
         {
             if (a[j] > a[j + 1])
             {
@@ -51,35 +39,15 @@ void p_bubble(int* a, int n)
 
 void swap(int& a, int& b)
 {
-    int test;
-    test = a;
+    int temp;
+    temp = a;
     a = b;
-    b = test;
-}
-
-int bench_traverse(std::function<void()> traverse_fn)
-{
-    auto start = high_resolution_clock::now();
-    traverse_fn();
-    auto stop = high_resolution_clock::now();
-
-    // Subtract stop and start timepoints and cast it to required unit.
-    // Predefined units are nanoseconds, microseconds, milliseconds, seconds,
-    // minutes, hours. Use duration_cast() function.
-    auto duration = duration_cast<milliseconds>(stop - start);
-
-    // To get the value of duration use the count() member function on the duration object
-    return duration.count();
+    b = temp;
 }
 
 int main(int argc, const char** argv)
 {
-    if (argc < 2)
-    {
-        cout << "Specify array length.\n";
-        return 1;
-    }
-
+ 
     int* a, n;
     n = stoi(argv[1]);
     a = new int[n];
@@ -91,19 +59,23 @@ int main(int argc, const char** argv)
 
     cout << "Generated random array of length " << n << "\n\n";
 
-    int sequentialTime = bench_traverse([&] { s_bubble(a, n); });
-    omp_set_num_threads(2);
-    int parallelTime = bench_traverse([&] { p_bubble(a, n); });
+    auto start1 = high_resolution_clock::now();
+    s_bubble(a, n);
+    auto stop1 = high_resolution_clock::now();
+    int sequentialTime = duration_cast<milliseconds>(stop1 - start1).count();
+
+
+    auto start2 = high_resolution_clock::now();
+    p_bubble(a, n);
+    auto stop2 = high_resolution_clock::now();
+    int parallelTime = duration_cast<milliseconds>(stop2 - start2).count();
 
     float speedUp = (float)sequentialTime / parallelTime;
-    float efficiency = speedUp / 16;
-    cout<<"The first 10 elements of the sorted list are : ";
-    for(int i=0; i<n; i++){
-        cout<<a[i]<< " ";
-    }
+    float efficiency = speedUp / 2;
+
     cout<<endl;
     cout << "Sequential Bubble sort: " << sequentialTime << "ms\n";
-    cout << "Parallel (16) Bubble sort: " << parallelTime << "ms\n";
+    cout << "Parallel (2) Bubble sort: " << parallelTime << "ms\n";
     cout << "Speed Up: " << speedUp << "\n";
     cout << "Efficiency: " << efficiency << "\n";
 
