@@ -1,7 +1,4 @@
-#include <iostream>
-#include <vector>
-#include <stack>
-#include <ctime>
+#include<bits/stdc++.h>
 #include <omp.h>
 
 using namespace std;
@@ -41,7 +38,7 @@ void dfs(int startVertex, vector<bool>& visited, vector<vector<int>>& graph)
 }
 
 // Parallel Depth-First Search
-void parallelDFS(vector<vector<int>>& graph, int numCores)
+void dfsutil(vector<vector<int>>& graph, int numCores)
 {
     int numVertices = graph.size();
     vector<bool> visited(numVertices, false); // Keep track of visited vertices
@@ -59,7 +56,6 @@ void parallelDFS(vector<vector<int>>& graph, int numCores)
 
     double endTime = omp_get_wtime(); // End timer
 
-    cout << "Number of cores used: " << numCores << endl;
     cout << "Time taken: " << endTime - startTime << " seconds" << endl;
     cout << "------------------------" << endl;
 }
@@ -68,7 +64,7 @@ int main()
 {
     // Generate a random graph with 10,000 vertices and 50,000 edges
     int numVertices = 10000;
-    int numEdges = 50000;
+    int numEdges = 10000;
     vector<vector<int>> graph(numVertices);
     srand(time(0));
 
@@ -81,15 +77,12 @@ int main()
     }
 
     // Array containing number of cores
-    int numCoresArr[] = { 1, 2, 3, 4, 5, 6, 7, 8 };
 
-    // Loop over different number of cores and execute parallel DFS
-    for (int i = 0; i < sizeof(numCoresArr) / sizeof(numCoresArr[0]); i++)
-    {
-        int numCores = numCoresArr[i];
-        cout << "Running parallel DFS with " << numCores << " core(s)..." << endl;
-        parallelDFS(graph, numCores);
-    }
+    cout << "Running Sequential DFS: " << endl;
+    dfsutil(graph, 1);
+    cout<<endl;
+    cout << "Running Parallel DFS: " << endl;
+    dfsutil(graph, 2);
 
     return 0;
 }

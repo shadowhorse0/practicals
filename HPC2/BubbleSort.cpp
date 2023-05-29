@@ -59,23 +59,23 @@ int main(int argc, const char** argv)
 
     cout << "Generated random array of length " << n << "\n\n";
 
-    auto start1 = high_resolution_clock::now();
+    double start1 = omp_get_wtime(); // Start timer
     s_bubble(a, n);
-    auto stop1 = high_resolution_clock::now();
-    int sequentialTime = duration_cast<milliseconds>(stop1 - start1).count();
+    double stop1 = omp_get_wtime(); // Stop timer
+    double sequentialTime = stop1 - start1;
 
 
-    auto start2 = high_resolution_clock::now();
+    double start2 = omp_get_wtime(); // Start timer
     p_bubble(a, n);
-    auto stop2 = high_resolution_clock::now();
-    int parallelTime = duration_cast<milliseconds>(stop2 - start2).count();
+    double stop2 = omp_get_wtime(); // Stop timer
+    double parallelTime= stop2 - start2;
 
-    float speedUp = (float)sequentialTime / parallelTime;
-    float efficiency = speedUp / 2;
+    double speedUp = (float)sequentialTime / parallelTime;
+    double efficiency = speedUp / 2;
 
     cout<<endl;
-    cout << "Sequential Bubble sort: " << sequentialTime << "ms\n";
-    cout << "Parallel (2) Bubble sort: " << parallelTime << "ms\n";
+    cout << "Sequential Bubble sort: " << sequentialTime << " seconds\n";
+    cout << "Parallel (2) Bubble sort: " << parallelTime << " seconds\n";
     cout << "Speed Up: " << speedUp << "\n";
     cout << "Efficiency: " << efficiency << "\n";
 
