@@ -3,7 +3,7 @@ using namespace std;
 
 __global__
 void vectorAdd(int* a, int* b, int* c, int size){
-    int index = blockIdx.x+blockDim.x+threadIdx.x;
+    int index = blockIdx.x*blockDim.x+threadIdx.x;
     if(index<size){
         c[index]=a[index]+b[index];
     }
