@@ -75,20 +75,20 @@ int main()
     auto endSequential = chrono::high_resolution_clock::now();
 
     // Calculate elapsed time for parallel algorithm
-    auto durationParallel = chrono::duration_cast<std::chrono::microseconds>(endParallel - startParallel);
+    auto durationParallel = chrono::duration_cast<chrono::microseconds>(endParallel - startParallel);
 
     // Calculate elapsed time for sequential algorithm
-    auto durationSequential = std::chrono::duration_cast<std::chrono::microseconds>(endSequential - startSequential);
+    auto durationSequential = chrono::duration_cast<chrono::microseconds>(endSequential - startSequential);
 
     // Print performance results
-    std::cout << "Parallel Algorithm Time: " << durationParallel.count() << " microseconds" << std::endl;
-    std::cout << "Sequential Algorithm Time: " << durationSequential.count() << " microseconds" << std::endl;
+    cout << "Parallel Algorithm Time: " << durationParallel.count() << " microseconds" << endl;
+    cout << "Sequential Algorithm Time: " << durationSequential.count() << " microseconds" << endl;
 
     // Print the results of vector addition (first 10 elements)
-    std::cout << "Vector Addition Result:" << std::endl;
+    scout << "Vector Addition Result:" << endl;
     for (int i = 0; i < 10; ++i)
     {
-        std::cout << A[i] << " + " << B[i] << " = " << C[i] << std::endl;
+        scout << A[i] << " + " << B[i] << " = " << C[i] << endl;
     }
 
     // Free memory
