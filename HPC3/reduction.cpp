@@ -1,26 +1,15 @@
-#include <limits.h>
+#include <bits/stdc++.h>
 #include <omp.h>
-#include <stdlib.h>
-#include <array>
-#include <chrono>
-#include <functional>
-#include <iostream>
-#include <string>
-#include <vector>
-using std::chrono::duration_cast;
-using std::chrono::high_resolution_clock;
-using std::chrono::milliseconds;
 using namespace std;
 
 void s_avg(int arr[], int n)
 {
     long sum = 0L;
-    int i;
-    for (i = 0; i < n; i++)
+    for (int i = 0; i < n; i++)
     {
         sum = sum + arr[i];
     }
-    // cout << "\nAverage = " << sum / long(n) << "\n";
+    double avg = avg/n;
 }
 
 void p_avg(int arr[], int n)
@@ -32,111 +21,90 @@ void p_avg(int arr[], int n)
     {
         sum = sum + arr[i];
     }
-    // cout << "\nAverage = " << sum / long(n) << "\n";
+    double avg = avg/n;
 }
 
 void s_sum(int arr[], int n)
 {
     long sum = 0L;
-    int i;
-    for (i = 0; i < n; i++)
+    for (int i = 0; i < n; i++)
     {
         sum = sum + arr[i];
     }
-    // cout << "\nSum = " << sum << "\n";
+ 
 }
 
 void p_sum(int arr[], int n)
 {
     long sum = 0L;
-    int i;
 #pragma omp parallel for reduction(+ : sum) num_threads(16)
-    for (i = 0; i < n; i++)
+    for (int i = 0; i < n; i++)
     {
         sum = sum + arr[i];
     }
-    // cout << "\nSum = " << sum << "\n";
 }
 
 void s_max(int arr[], int n)
 {
     int max_val = INT_MIN;
-    int i;
-    for (i = 0; i < n; i++)
+    for (int i = 0; i < n; i++)
     {
         if (arr[i] > max_val)
         {
             max_val = arr[i];
         }
     }
-    // cout << "\nMax value = " << max_val << "\n";
 }
 
 void p_max(int arr[], int n)
 {
     int max_val = INT_MIN;
-    int i;
 #pragma omp parallel for reduction(max : max_val) num_threads(16)
-    for (i = 0; i < n; i++)
+    for (int i = 0; i < n; i++)
     {
         if (arr[i] > max_val)
         {
             max_val = arr[i];
         }
     }
-    // cout << "\nMax value = " << max_val << "\n";
 }
 
 void s_min(int arr[], int n)
 {
     int min_val = INT_MAX;
-    int i;
-    for (i = 0; i < n; i++)
+    for (int i = 0; i < n; i++)
     {
         if (arr[i] < min_val)
         {
             min_val = arr[i];
         }
     }
-    // cout << "\nMin value = " << min_val << "\n";
 }
 
 void p_min(int arr[], int n)
 {
     int min_val = INT_MAX;
-    int i;
 #pragma omp parallel for reduction(min : min_val) num_threads(16)
-    for (i = 0; i < n; i++)
+    for (int i = 0; i < n; i++)
     {
         if (arr[i] < min_val)
         {
             min_val = arr[i];
         }
     }
-    // cout << "\nMin value = " << min_val << "\n";
 }
 
-int bench_traverse(std::function<void()> traverse_fn)
+int traverse(function<void()> fn)
 {
-    auto start = high_resolution_clock::now();
-    traverse_fn();
-    auto stop = high_resolution_clock::now();
-    // Subtract stop and start timepoints and cast it to the required unit.
-    // Predefined units are nanoseconds, microseconds, milliseconds, seconds,
-    // minutes, hours. Use duration_cast() function.
-    auto duration = duration_cast<milliseconds>(stop - start);
-    // To get the value of duration, use the count() member function on the
-    // duration object
+    auto start = chrono::high_resolution_clock::now();
+    fn();
+    auto stop = chrono::high_resolution_clock::now();
+    auto duration = chrono::duration_cast<chrono::milliseconds>(stop - start);
     return duration.count();
 }
 
 int main(int argc, const char **argv)
 {
-    if (argc < 2)
-    {
-        cout << "Specify array length.\n";
-        return 1;
-    }
     int *a, n, i;
     n = stoi(argv[1]);
     a = new int[n];
@@ -144,60 +112,53 @@ int main(int argc, const char **argv)
     {
         a[i] = rand() % n;
     }
-    cout << "Generated random array of length " << n << "\n\n";
+
+    cout << "Generated random array of length: " << n << endl;
     omp_set_num_threads(16);
 
-    int sequentialMin = bench_traverse([&] {
+    int s_min_t = traverse([&] {
         s_min(a, n);
     });
 
-    int parallelMin = bench_traverse([&] {
+    int p_min_t = traverse([&] {
         p_min(a, n);
     });
 
-    int sequentialMax = bench_traverse([&] {
+    int s_max_t = traverse([&] {
         s_max(a, n);
     });
 
-    int parallelMax = bench_traverse([&] {
+    int p_max_t = traverse([&] {
         p_max(a, n);
     });
 
-    int sequentialSum = bench_traverse([&] {
+    int s_sum_t = traverse([&] {
         s_sum(a, n);
     });
 
-    int parallelSum = bench_traverse([&] {
+    int p_sum_t = traverse([&] {
         p_sum(a, n);
     });
 
-    int sequentialAverage = bench_traverse([&] {
+    int s_avg_t = traverse([&] {
         s_avg(a, n);
     });
 
-    int parallelAverage = bench_traverse([&] {
+    int p_avg_t = traverse([&] {
         p_avg(a, n);
     });
 
-    cout << "Sequential Min: " << sequentialMin << "ms\n";
-    cout << "Parallel (16) Min: " << parallelMin << "ms\n";
-    cout << "Speed Up for Min: " << (float)sequentialMin / parallelMin << "\n";
-    cout << "Efficiency for Min: " << ((float)sequentialMin / parallelMin) / 16 << "\n";
+    cout << "Sequential Min: " << s_min_t << " ms"<<endl;
+    cout << "Parallel Min: " << p_min_t<< " ms"<<endl;
 
-    cout << "\nSequential Max: " << sequentialMax << "ms\n";
-    cout << "Parallel (16) Max: " << parallelMax << "ms\n";
-    cout << "Speed Up for Max: " << (float)sequentialMax / parallelMax << "\n";
-    cout << "Efficiency for Max: " << ((float)sequentialMax / parallelMax) / 16 << "\n";
+    cout << "Sequential Max: " << s_max_t << " ms"<<endl;
+    cout << "Parallel Max: " << p_max_t<< " ms"<<endl;
 
-    cout << "\nSequential Sum: " << sequentialSum << "ms\n";
-    cout << "Parallel (16) Sum: " << parallelSum << "ms\n";
-    cout << "Speed Up for Sum: " << (float)sequentialSum / parallelSum << "\n";
-    cout << "Efficiency for Sum: " << ((float)sequentialSum / parallelSum) / 16 << "\n";
+    cout << "Sequential Sum: " << s_sum_t<< " ms"<<endl;
+    cout << "Parallel Sum: " << p_sum_t<< " ms"<<endl;
 
-    cout << "\nSequential Average: " << sequentialAverage << "ms\n";
-    cout << "Parallel (16) Average: " << parallelAverage << "ms\n";
-    cout << "Speed Up for Average: " << (float)sequentialAverage / parallelAverage << "\n";
-    cout << "Efficiency for Average: " << ((float)sequentialAverage / parallelAverage) / 16 << "\n";
+    cout << "Sequential Average: " << s_avg_t << " ms"<<endl;
+    cout << "Parallel Average: " << p_avg_t << " ms"<<endl;
 
     return 0;
 }
