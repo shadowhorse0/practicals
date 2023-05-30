@@ -1,8 +1,5 @@
-#include <iostream>
-#include <cstdlib>
-#include <ctime>
-#include <chrono>
-
+#include<bits/stdc++.h>
+using namespace std;
 // CUDA kernel for vector addition
 __global__
 void vectorAddition(const int* A, const int* B, int* C, int size)
@@ -34,7 +31,6 @@ int main()
     int* C = new int[size];
 
     // Initialize vectors with random values
-    srand(static_cast<unsigned>(time(0)));
     for (int i = 0; i < size; ++i)
     {
         A[i] = rand() % 100;
@@ -54,9 +50,8 @@ int main()
     // Set up thread configuration
     int threadsPerBlock = 256;
     int blocksPerGrid = (size + threadsPerBlock - 1) / threadsPerBlock;
-
     // Start timer for parallel algorithm
-    auto startParallel = std::chrono::high_resolution_clock::now();
+    auto startParallel = chrono::high_resolution_clock::now();
 
     // Launch kernel for vector addition in parallel
     vectorAddition<<<blocksPerGrid, threadsPerBlock>>>(d_A, d_B, d_C, size);
@@ -65,22 +60,22 @@ int main()
     cudaDeviceSynchronize();
 
     // End timer for parallel algorithm
-    auto endParallel = std::chrono::high_resolution_clock::now();
+    auto endParallel = chrono::high_resolution_clock::now();
 
     // Copy result vector from device to host
     cudaMemcpy(C, d_C, sizeof(int) * size, cudaMemcpyDeviceToHost);
 
     // Start timer for sequential algorithm
-    auto startSequential = std::chrono::high_resolution_clock::now();
+    auto startSequential = chrono::high_resolution_clock::now();
 
     // Perform vector addition sequentially
     sequentialVectorAddition(A, B, C, size);
 
     // End timer for sequential algorithm
-    auto endSequential = std::chrono::high_resolution_clock::now();
+    auto endSequential = chrono::high_resolution_clock::now();
 
     // Calculate elapsed time for parallel algorithm
-    auto durationParallel = std::chrono::duration_cast<std::chrono::microseconds>(endParallel - startParallel);
+    auto durationParallel = chrono::duration_cast<std::chrono::microseconds>(endParallel - startParallel);
 
     // Calculate elapsed time for sequential algorithm
     auto durationSequential = std::chrono::duration_cast<std::chrono::microseconds>(endSequential - startSequential);
@@ -106,4 +101,3 @@ int main()
 
     return 0;
 }
-
